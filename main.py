@@ -135,7 +135,7 @@ def t():
         def conf():
 
             orderidno = random.randint(0, 9999999)
-            f = open('e:\\computer science 12 files\\project XII\\2nd test\\orderids.dat', 'ab+')
+            f = open('orderids.dat', 'ab+')
             c = 0
             try:
                 while True:
@@ -146,7 +146,7 @@ def t():
             except:
                 f.close()
             if c == 0:
-                f = open('e:\\computer science 12 files\\project XII\\2nd test\\orderids.dat', 'ab+')
+                f = open('orderids.dat', 'ab+')
                 pickle.dump(str(orderidno), f)
                 f.close()
             l.append(str(orderidno))
