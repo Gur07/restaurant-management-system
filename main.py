@@ -18,7 +18,7 @@ import random
 import pymysql
 from datetime import date
 from tkinter import messagebox
-
+dicprice = {'item1': 100, 'item2': 100, 'item3': 100, 'item4': 100, 'item5': 100, 'item6': 100, 'item7': 100, 'item8': 100}
 
 psw=input('enter sql passcode:')
 try:
@@ -48,7 +48,7 @@ def t():
     window_takeorder.focus()
     l = []
     dic = {'item1': 0, 'item2': 0, 'item3': 0, 'item4': 0, 'item5': 0, 'item6': 0, 'item7': 0, 'item8': 0}
-    dicprice = {'item1': 10, 'item2': 10, 'item3': 10, 'item4': 10, 'item5': 10, 'item6': 10, 'item7': 10, 'item8': 10}
+
 
     def add_dict(n):
         dic[n] += 1
@@ -406,13 +406,7 @@ def st():
     window.geometry('500x300')
 
     def extstat(n):
-        import pymysql
-        try:
-            db = pymysql.connect(host='localhost', user='root', password=n, db='restaurant')
-            print('connected')
-            cur = db.cursor()
-        except:
-            print('connection error')
+
         x = cur.execute('select count(name),sum(total),sum(amount)*0.1 from ctd;')
         db.commit()
         f = cur.fetchall()
@@ -491,6 +485,24 @@ def st():
             ans6 = tk.Label(windowstat, text='{}'.format(q[6]))
             ans6.grid(column=2, row=7, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
+            cp=tk.Label(windowstat,text='enter item to change price:')
+            cp.grid(column=1, row=8, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+            cpe=tk.Entry(windowstat)
+            cpe.grid(column=2, row=8, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+            cdp = tk.Label(windowstat, text='enter changed price:')
+            cdp.grid(column=1, row=9, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+            cdpe = tk.Entry(windowstat)
+            cdpe.grid(column=2, row=9, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+            def change():
+                dicprice[cpe.get()]=int(cdpe.get())
+                cdpe.delete(0,tk.END)
+                cpe.delete(0,tk.END)
+            button_change=tk.Button(windowstat,text='change',command=change)
+            button_change.grid(column=2, row=10, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
 
 
             windowstat.mainloop()
@@ -501,6 +513,7 @@ def st():
             wl.pack()
     show_det=tk.Button(window,text='verify',command=check)
     show_det.pack()
+
 
     window.mainloop()
 
