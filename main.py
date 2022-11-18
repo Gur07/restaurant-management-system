@@ -205,7 +205,7 @@ def t():
                                 )
         chbox2.place(relx=0.4,rely=0.4)
         amountdisplay=tk.Label(window_confirm,text='total amount= {}'.format(a+(0.18*a)),font=('arial,25'),fg='red')
-        amountdisplay.place(relx=0.4,rely=0.1)
+        amountdisplay.place(relx=0.2,rely=0.1)
 
 
     done = tk.Button(window_takeorder, text='Done', fg='black', font=('Arial', 15), height=1, width=5,
@@ -384,8 +384,8 @@ def sd():
                 print('record found', f)
                 for i in f :
                     print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0],i[1],i[2],i[3],i[4],i[5]))
-                    l=[i[0],i[1],i[2],str(i[3]),i[4],i[5]]
-                    label=tk.Label(window_searchdesignation,text='{}'.format(l),font=25)
+                    lt=[i[0],i[1],i[2],str(i[3]),i[4],i[5]]
+                    label=tk.Label(window_searchdesignation,text='{}'.format(lt),font=25)
                     label.pack()
 
 
@@ -445,8 +445,8 @@ def st():
             window.destroy()
 
             windowstat = tk.Tk()
-            windowstat.title('Add employee')
-            windowstat.geometry('400x450')
+            windowstat.title('Statistics')
+            windowstat.geometry('400x500')
             windowstat.resizable(None, None)
 
             tnot = tk.Label(windowstat, text='Total number of orders taken:', font=20)
@@ -517,9 +517,36 @@ def st():
 
     window.mainloop()
 
+def sr():
+    window_record = tk.Tk()
+    window_record.title('search employee')
+    window_record.geometry('800x200')
+    window_record.resizable(0, 1)
+    name_search = tk.Label(window_record, text='enter order-id :', font='30')
+    name_search.pack()
+    en1 = tk.Entry(window_record)
+    en1.pack()
+
+    def search_rec():
+        q='''select name,phno,mode_of_payment,date_of_order,total,no_of_items from ctd,order_details 
+        where ctd.order_id=order_details.order_id and ctd.order_id='{}'; '''.format(en1.get())
+
+        x = cur.execute(q)
+        f = cur.fetchall()
+        if x > 0:
+            print('record found', f)
+            for i in f:
+                print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0], i[1], i[2], i[3], i[4], i[5]))
+                lo = [i[0], i[1], i[2], str(i[3]), i[4], i[5]]
+                label = tk.Label(window_record, text='{}'.format(lo), font=25)
+                label.pack()
+
+    searchbutton = tk.Button(window_record, text='search', command=search_rec)
+    searchbutton.pack()
+
 
 first_window = tk.Tk()     # first window / starting window
-first_window.title('rasoi')
+first_window.title('Kitchen')
 first_window.geometry('1000x500')
 first_window.resizable(0, 0)
 
@@ -542,5 +569,7 @@ search_emp = tk.Button(first_window, text='SEARCH EMPLOYEE\nby name',bg='purple'
 search_emp.grid(column=1,row=3)
 statb = tk.Button(first_window, text='Restaurant stats',bg='purple',font=18,fg='white',height=5,width=35,borderwidth=3, command=st)
 statb.grid(column=3,row=3)
+searchbill = tk.Button(first_window, text='search record', bg='purple', font=18, fg='white', height=5, width=35, borderwidth=3, command=sr)
+searchbill.grid(column=2,row=3)
 
 first_window.mainloop()
