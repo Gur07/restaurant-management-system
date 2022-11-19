@@ -19,26 +19,53 @@ import pymysql
 from datetime import date
 from tkinter import messagebox
 dicprice = {'item1': 100, 'item2': 100, 'item3': 100, 'item4': 100, 'item5': 100, 'item6': 100, 'item7': 100, 'item8': 100}
+psw1=None
 
-psw=input('enter sql passcode:')
-try:
-    db=pymysql.connect(host='localhost',user='root',password=psw)
-    print('connected')
-    cur=db.cursor()
-    try:
-        cur.execute('use restaurant;')
-        print('data base present.')
-    except:
-        cur.execute('create database restaurant;')
-        cur.execute('create table ctd(name varchar(30),phno char(10),order_id varchar(15) primary key,mode_of_payment char(4),tax varchar(5),amount int,date_of_order date)')
-        cur.execute('create table employee(empno int,ename varchar(20) primary key,designation varchar(20),hiredate date,salary int,department varchar(15)')
-        cur.execute('create table order_details(order_id varchar(15) primary key,no_of_items int,item1 int,item2 int,item3 int,item4 int,item5 int,item6 int,item7 int,item8 int)')
-        print('database/tables created')
-
-except:
-    print('Wrong passcode')
+intropage=tk.Tk()
+intropage.title('startup')
+intropage.geometry('600x200')
+intropage.resizable(0,0)
+def disable_event():
     exit()
+intropage.protocol('WM_DELETE_WINDOW', disable_event)
+cur=None
+db=None
+def conn():
+    try:
+        global cur
+        global db
+        global psw1
+        db=pymysql.connect(host='localhost',user='root',password=psw.get())
+        print('connected')
+        cur=db.cursor()
+        try:
+            cur.execute('use restaurant;')
+            print('data base present.')
 
+            psw1=psw.get()
+            intropage.destroy()
+        except:
+            cur.execute('create database restaurant;')
+            cur.execute('create table ctd(name varchar(30),phno char(10),order_id varchar(15) primary key,mode_of_payment char(4),tax varchar(5),amount int,date_of_order date)')
+            cur.execute('create table employee(empno int,ename varchar(20) primary key,designation varchar(20),hiredate date,salary int,department varchar(15)')
+            cur.execute('create table order_details(order_id varchar(15) primary key,no_of_items int,item1 int,item2 int,item3 int,item4 int,item5 int,item6 int,item7 int,item8 int)')
+            print('database/tables created')
+
+            psw1 = psw.get()
+            intropage.destroy()
+
+    except:
+        print('Wrong passcode')
+        exit()
+
+
+la=tk.Label(intropage,text='Enter Password(MYSQL):')
+la.pack()
+psw=tk.Entry()
+psw.pack()
+confirmb=tk.Button(text='confirm',command=conn)
+confirmb.pack()
+intropage.mainloop()
 
 def t():
     window_takeorder = tk.Tk()
@@ -134,14 +161,14 @@ def t():
 
         def conf():
 
-            orderidno = random.randint(0, 9999999)
+            orderidno = random.randint(0, 9999)
             f = open('orderids.dat', 'ab+')
             c = 0
             try:
                 while True:
                     h = pickle.load(f)
                     if orderidno == h:
-                        orderidno = random.randint(0, 9999999)
+                        orderidno = random.randint(0, 9999)
                         c = 1
             except:
                 f.close()
@@ -184,7 +211,7 @@ def t():
             except Exception as e:
                 print(e)
 
-            messagebox.showinfo('Thanks','Thanks for choosing us.')
+            messagebox.showinfo('Thanks','Thanks for choosing us.\nOrder id:{}'.format(l[4]))
 
 
 
@@ -206,6 +233,8 @@ def t():
         chbox2.place(relx=0.4,rely=0.4)
         amountdisplay=tk.Label(window_confirm,text='total amount= {}'.format(a+(0.18*a)),font=('arial,25'),fg='red')
         amountdisplay.place(relx=0.2,rely=0.1)
+
+
 
 
     done = tk.Button(window_takeorder, text='Done', fg='black', font=('Arial', 15), height=1, width=5,
@@ -434,7 +463,7 @@ def st():
                 f2[0],
                 f[0][2] - f2[0])
 
-    q=extstat('123st.gur')
+    q=extstat(psw1)
 
     e1 = tk.Label(window,text='enter code:',font=('Arial', 14))
     e2 = tk.Entry(window, show='*', font=('Arial', 14))
@@ -446,7 +475,7 @@ def st():
 
             windowstat = tk.Tk()
             windowstat.title('Statistics')
-            windowstat.geometry('400x500')
+            windowstat.geometry('400x400')
             windowstat.resizable(None, None)
 
             tnot = tk.Label(windowstat, text='Total number of orders taken:', font=20)
@@ -485,25 +514,6 @@ def st():
             ans6 = tk.Label(windowstat, text='{}'.format(q[6]))
             ans6.grid(column=2, row=7, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
-            cp=tk.Label(windowstat,text='enter item to change price:')
-            cp.grid(column=1, row=8, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-
-            cpe=tk.Entry(windowstat)
-            cpe.grid(column=2, row=8, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-
-            cdp = tk.Label(windowstat, text='enter changed price:')
-            cdp.grid(column=1, row=9, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-
-            cdpe = tk.Entry(windowstat)
-            cdpe.grid(column=2, row=9, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-            def change():
-                dicprice[cpe.get()]=int(cdpe.get())
-                cdpe.delete(0,tk.END)
-                cpe.delete(0,tk.END)
-            button_change=tk.Button(windowstat,text='change',command=change)
-            button_change.grid(column=2, row=10, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-
-
 
             windowstat.mainloop()
 
@@ -519,13 +529,13 @@ def st():
 
 def sr():
     window_record = tk.Tk()
-    window_record.title('search employee')
-    window_record.geometry('800x200')
+    window_record.title('search order')
+    window_record.geometry('800x500')
     window_record.resizable(0, 1)
-    name_search = tk.Label(window_record, text='enter order-id :', font='30')
-    name_search.pack()
+    name_search = tk.Label(window_record, text='enter order id:', font='30')
+    name_search.place(relx=0.8, rely=0.15)
     en1 = tk.Entry(window_record)
-    en1.pack()
+    en1.place(rely=0.2, relx=0.8)
 
     def search_rec():
         q='''select name,phno,mode_of_payment,date_of_order,total,no_of_items from ctd,order_details 
@@ -537,12 +547,49 @@ def sr():
             print('record found', f)
             for i in f:
                 print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0], i[1], i[2], i[3], i[4], i[5]))
-                lo = [i[0], i[1], i[2], str(i[3]), i[4], i[5]]
-                label = tk.Label(window_record, text='{}'.format(lo), font=25)
-                label.pack()
+
+                tnot = tk.Label(window_record, text='Name of recipient:', font=20)
+                tnot.grid(column=1, row=2, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans1 = tk.Label(window_record, text='{}'.format(i[0]))
+                ans1.grid(column=2, row=2, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+                tr = tk.Label(window_record, text='Phone number:', font=20)
+                tr.grid(column=1, row=3, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans2 = tk.Label(window_record, text='{}'.format(i[1]))
+                ans2.grid(column=2, row=3, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+                pxs = tk.Label(window_record, text='Mode of payment:', font=20)
+                pxs.grid(column=1, row=4, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans3 = tk.Label(window_record, text='{}'.format(i[2]))
+                ans3.grid(column=2, row=4, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+                msi = tk.Label(window_record, text='Date:', font=20)
+                msi.grid(column=1, row=5, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans4 = tk.Label(window_record, text='{}'.format(i[3]))
+                ans4.grid(column=2, row=5, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+                cs = tk.Label(window_record, text='Bill amount', font=20)
+                cs.grid(column=1, row=6, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans5 = tk.Label(window_record, text='{}'.format(i[4]))
+                ans5.grid(column=2, row=6, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+                np = tk.Label(window_record, text='No. of items:', font=20)
+                np.grid(column=1, row=7, ipadx=10, ipady=10, sticky=tk.W)
+
+                ans6 = tk.Label(window_record, text='{}'.format(i[5]))
+                ans6.grid(column=2, row=7, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+
+
+
 
     searchbutton = tk.Button(window_record, text='search', command=search_rec)
-    searchbutton.pack()
+    searchbutton.place(rely=0.3, relx=0.9, anchor=tk.E)
 
 
 first_window = tk.Tk()     # first window / starting window
@@ -567,9 +614,9 @@ search_emp_work = tk.Button(first_window, text='SEARCH EMPLOYEE\nby designation'
 search_emp_work.grid(column=1,row=1)
 search_emp = tk.Button(first_window, text='SEARCH EMPLOYEE\nby name',bg='purple',fg='white',height=5,width=35,borderwidth=3,command=s)
 search_emp.grid(column=1,row=3)
-statb = tk.Button(first_window, text='Restaurant stats',bg='purple',font=18,fg='white',height=5,width=35,borderwidth=3, command=st)
+statb = tk.Button(first_window, text='RESTAURANT stats',bg='purple',fg='white',height=5,width=35,borderwidth=3, command=st)
 statb.grid(column=3,row=3)
-searchbill = tk.Button(first_window, text='search record', bg='purple', font=18, fg='white', height=5, width=35, borderwidth=3, command=sr)
+searchbill = tk.Button(first_window, text='SEARCH record', bg='purple',  fg='white', height=5, width=35, borderwidth=3, command=sr)
 searchbill.grid(column=2,row=3)
 
 first_window.mainloop()
