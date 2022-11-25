@@ -13,23 +13,30 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('PyCharm')
 import tkinter as tk
-import pickle
 import random
 import pymysql
 from datetime import date
 from tkinter import messagebox
 dicprice = {'item1': 100, 'item2': 100, 'item3': 100, 'item4': 100, 'item5': 100, 'item6': 100, 'item7': 100, 'item8': 100}
-psw1=None
 
+#Sql passcode window
 intropage=tk.Tk()
 intropage.title('startup')
 intropage.geometry('600x200')
 intropage.resizable(0,0)
+
+
 def disable_event():
     exit()
+
+
 intropage.protocol('WM_DELETE_WINDOW', disable_event)
 cur=None
 db=None
+psw1=None
+# global variables for cursor and db
+
+
 def conn():
     try:
         global cur
@@ -41,14 +48,14 @@ def conn():
         try:
             cur.execute('use restaurant;')
             print('data base present.')
-
-            psw1=psw.get()
+            psw1=psw.get()  #assigning value to global psw1
             intropage.destroy()
         except:
             cur.execute('create database restaurant;')
             cur.execute('create table ctd(name varchar(30),phno char(10),order_id varchar(15) primary key,mode_of_payment char(4),tax varchar(5),amount int,date_of_order date)')
             cur.execute('create table employee(empno int,ename varchar(20) primary key,designation varchar(20),hiredate date,salary int,department varchar(15)')
             cur.execute('create table order_details(order_id varchar(15) primary key,no_of_items int,item1 int,item2 int,item3 int,item4 int,item5 int,item6 int,item7 int,item8 int)')
+            cur.execute('''insert into employee(ename,designation,salary,department) values('Ratan sharma','owner',0,'office');''')
             print('database/tables created')
 
             psw1 = psw.get()
@@ -83,28 +90,20 @@ def t():
 
     def add_item(n):
         if n == 1:
-            print('item 1 added')
             add_dict('item1')
         elif n == 2:
-            print('item 2 added')
             add_dict('item2')
         elif n == 3:
-            print('item 3 added')
             add_dict('item3')
         elif n == 4:
-            print('item 4 added')
             add_dict('item4')
         elif n == 5:
-            print('item 5 added')
             add_dict('item5')
         elif n == 6:
-            print('item 6 added')
             add_dict('item6')
         elif n == 7:
-            print('item 7 added')
             add_dict('item7')
         elif n == 8:
-            print('item 8 added')
             add_dict('item8')
 
     it1 = tk.Button(window_takeorder, text='item1', bg='purple', fg='white', font='100', height=3, width=15,
@@ -142,7 +141,8 @@ def t():
     def done_command():
         l.append(enter_name.get())
         l.append(enter_phno.get())
-        a = 0  # total amount
+        a = 0
+        # total amount
         for item in dic.items():
             x = item[0]
             y = item[1]
@@ -162,27 +162,11 @@ def t():
         def conf():
 
             orderidno = random.randint(0, 9999)
-            f = open('orderids.dat', 'ab+')
-            c = 0
-            try:
-                while True:
-                    h = pickle.load(f)
-                    if orderidno == h:
-                        orderidno = random.randint(0, 9999)
-                        c = 1
-            except:
-                f.close()
-            if c == 0:
-                f = open('orderids.dat', 'ab+')
-                pickle.dump(str(orderidno), f)
-                f.close()
+
             l.append(str(orderidno))
             window_confirm.destroy()
 
-
             # SQL connectivity
-
-
 
             l.append('18')                 # tax
 
@@ -281,9 +265,13 @@ def c():
             cur.execute(query+';')
             db.commit()
         except Exception as e:
-            p=tk.Label(windowemp,text='employee name already present',font=20,fg='red')
+            p=tk.Label(windowemp,text='employee name already present\nDETAILS UPDATED',font=20,fg='red')
             p.place(rely=0.8,relx=0.2)
-            print(e)
+
+            cur.execute('''update employee set salary ={},hiredate='{}',designation='{}',department='{}' where 
+                ename='{}';'''.format(salentry.get(),hirentry.get(),desientry.get(),depentry.get(),namentry.get()))
+            db.commit()
+
 
         namentry.delete(0, tk.END)
         desientry.delete(0, tk.END)
@@ -299,7 +287,7 @@ def c():
     l2.grid(column=1, row=2, ipadx=10, ipady=10, sticky=tk.W)
     desientry = tk.Entry(windowemp)
     desientry.grid(column=2, row=2, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-    hiredate = tk.Label(windowemp, text='Date(YYYY-MM-DD)', font=20)
+    hiredate = tk.Label(windowemp, text='Hire Date(YYYY-MM-DD)', font=20)
     hiredate.grid(column=1, row=3, ipadx=10, ipady=10, sticky=tk.W)
 
     def validate1():
@@ -342,10 +330,10 @@ def s():
 
     window_search=tk.Tk()
     window_search.title('search employee')
-    window_search.geometry('800x500')
+    window_search.geometry('800x350')
     window_search.resizable(None,None)
     name_search=tk.Label(window_search,text='enter name :',font='30')
-    name_search.place(relx=0.8,rely=0.15)
+    name_search.place(relx=0.8,rely=0.12)
     en1=tk.Entry(window_search)
     en1.place(rely=0.2,relx=0.8)
 
@@ -357,9 +345,9 @@ def s():
             if x > 0:
                 print('record found', f)
                 for i in f :
-                    print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0],i[1],i[2],i[3],i[4],i[5]))
-                    l = tk.Label(window_search, text='Name:', font=20)
-                    l.grid(column=1, row=1, ipadx=10, ipady=10, sticky=tk.W)
+
+                    l3 = tk.Label(window_search, text='Name:', font=20)
+                    l3.grid(column=1, row=1, ipadx=10, ipady=10, sticky=tk.W)
                     namentry = tk.Label(window_search, text='{}'.format(i[1]))
                     namentry.grid(column=2, row=1, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
                     l2 = tk.Label(window_search, text='Designation:', font=20)
@@ -412,7 +400,7 @@ def sd():
             if x > 0:
                 print('record found', f)
                 for i in f :
-                    print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0],i[1],i[2],i[3],i[4],i[5]))
+
                     lt=[i[0],i[1],i[2],str(i[3]),i[4],i[5]]
                     label=tk.Label(window_searchdesignation,text='{}'.format(lt),font=25)
                     label.pack()
@@ -436,14 +424,14 @@ def st():
 
     def extstat(n):
 
-        x = cur.execute('select count(name),sum(total),sum(amount)*0.1 from ctd;')
+        cur.execute('select count(name),sum(total),sum(amount)*0.25 from ctd;')
         db.commit()
         f = cur.fetchall()
 
         d = {0: 'item1', 1: 'item2', 2: 'item3', 3: 'item4', 4: 'item5', 5: 'item6', 6: 'item7', 7: 'item8'}
-        y = cur.execute(
-            'select sum(item1),sum(item2),sum(item3),sum(item4),sum(item5),sum(item6),sum(item7),sum(item8) from order_details;')
-        f1 = cur.fetchmany(8)
+        cur.execute('select sum(item1),sum(item2),sum(item3),sum(item4),sum(item5),sum(item6),sum(item7),sum(item8)'
+                    'from order_details;')
+        f1 = cur.fetchall()
         i = f1[0]
         m = 0
         for j in i:
@@ -453,15 +441,24 @@ def st():
                 pass
 
         z = i.index(m)
-        c = cur.execute('select sum(salary) from employee;')
-        f2 = cur.fetchone()
+        cur.execute('select sum(salary),count(ename) from employee;')
+        f2 = cur.fetchall()
+        cur.execute('select mode_of_payment,count(mode_of_payment) from ctd group by mode_of_payment;')
+        f3 = cur.fetchall()
+        cc=dict(f3)
+        cashnum=cc['CASH']
+        cardnum=cc['CARD']
+
+        cur.execute('select sum(no_of_items),count(no_of_items) from order_details;')
+        f4=cur.fetchall()
+
 
         return (f[0][0],
                 f[0][1],
                 f[0][2],
                 d[z], m,
-                f2[0],
-                f[0][2] - f2[0])
+                f2[0][0],
+                f2[0][1],cashnum,cardnum,f4[0][0],f4[0][1])
 
     q=extstat(psw1)
 
@@ -475,44 +472,57 @@ def st():
 
             windowstat = tk.Tk()
             windowstat.title('Statistics')
-            windowstat.geometry('400x400')
+            windowstat.geometry('400x500')
             windowstat.resizable(None, None)
 
             tnot = tk.Label(windowstat, text='Total number of orders taken:', font=20)
             tnot.grid(column=1, row=2, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans1 = tk.Label(windowstat,text='{}'.format(q[0]))
+            ans1 = tk.Label(windowstat,text='{}'.format(q[0]),font=20)
             ans1.grid(column=2, row=2, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
             tr = tk.Label(windowstat, text='total revenue:', font=20)
             tr.grid(column=1, row=3, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans2 = tk.Label(windowstat,text='{}'.format(q[1]))
+            ans2 = tk.Label(windowstat,text='{}'.format(q[1]),font=20)
             ans2.grid(column=2, row=3, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
             pxs = tk.Label(windowstat, text='Profit(excluding salary):', font=20)
             pxs.grid(column=1, row=4, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans3 = tk.Label(windowstat,text='{}'.format(q[2]))
+            ans3 = tk.Label(windowstat,text='{}'.format(q[2]),font=20)
             ans3.grid(column=2, row=4, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
             msi = tk.Label(windowstat, text='Most sold item:', font=20)
             msi.grid(column=1, row=5, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans4 = tk.Label(windowstat,text='{}'.format(q[3]))
+            ans4 = tk.Label(windowstat,text='{}'.format(q[3]),font=20)
             ans4.grid(column=2, row=5, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
-            cs = tk.Label(windowstat, text='Combined salary', font=20)
+            cs = tk.Label(windowstat, text='Combined salary\nno. of employees', font=20)
             cs.grid(column=1, row=6, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans5 = tk.Label(windowstat, text='{}'.format(q[5]))
+            ans5 = tk.Label(windowstat, text='{}\n{}'.format(q[5],q[6]),font=20)
             ans5.grid(column=2, row=6, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
-            np = tk.Label(windowstat, text='Net profit:', font=20)
-            np.grid(column=1, row=7, ipadx=10, ipady=10, sticky=tk.W)
+            avgodv = tk.Label(windowstat, text='Average order value', font=20)
+            avgodv.grid(column=1, row=7, ipadx=10, ipady=10, sticky=tk.W)
 
-            ans6 = tk.Label(windowstat, text='{}'.format(q[6]))
+            ans6 = tk.Label(windowstat, text='{}'.format(q[1]/q[0]),font=20)
             ans6.grid(column=2, row=7, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+            cor = tk.Label(windowstat, text='Cash orders\nCard orders', font=20)
+            cor.grid(column=1, row=8, ipadx=10, ipady=10, sticky=tk.W)
+
+            ans7 = tk.Label(windowstat, text='{}\n{}'.format(q[7],q[8]),font=20)
+            ans7.grid(column=2, row=8, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
+            aoi = tk.Label(windowstat, text='Average order items', font=20)
+            aoi.grid(column=1, row=9, ipadx=10, ipady=10, sticky=tk.W)
+
+            ans8 = tk.Label(windowstat, text='{}'.format(q[9]/q[10]),font=20)
+            ans8.grid(column=2, row=9, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
+
 
 
             windowstat.mainloop()
@@ -530,8 +540,8 @@ def st():
 def sr():
     window_record = tk.Tk()
     window_record.title('search order')
-    window_record.geometry('800x500')
-    window_record.resizable(0, 1)
+    window_record.geometry('800x400')
+    window_record.resizable(0, 0)
     name_search = tk.Label(window_record, text='enter order id:', font='30')
     name_search.place(relx=0.8, rely=0.15)
     en1 = tk.Entry(window_record)
@@ -546,7 +556,7 @@ def sr():
         if x > 0:
             print('record found', f)
             for i in f:
-                print('{}\t{}\t{}\t{}\t{}\t{}'.format(i[0], i[1], i[2], i[3], i[4], i[5]))
+
 
                 tnot = tk.Label(window_record, text='Name of recipient:', font=20)
                 tnot.grid(column=1, row=2, ipadx=10, ipady=10, sticky=tk.W)
@@ -593,7 +603,7 @@ def sr():
 
 
 first_window = tk.Tk()     # first window / starting window
-first_window.title('Kitchen')
+first_window.title("Restaurant")
 first_window.geometry('1000x500')
 first_window.resizable(0, 0)
 
@@ -608,7 +618,7 @@ first_window.rowconfigure(3, weight=1)
 
 take_order_button = tk.Button(first_window, text='TAKE ORDER',bg='orange',height=5,width=35,borderwidth=3, command=t)
 take_order_button.grid(column=2,row=2)
-change_price = tk.Button(first_window, text='ADD EMPLOYEE DETAILS',bg='purple',fg='white',height=5,width=35,borderwidth=3, command=c)
+change_price = tk.Button(first_window, text='ADD EMPLOYEE DETAILS / UPDATE',bg='purple',fg='white',height=5,width=35,borderwidth=3, command=c)
 change_price.grid(column=3,row=1)
 search_emp_work = tk.Button(first_window, text='SEARCH EMPLOYEE\nby designation',bg='purple',fg='white',height=5,width=35,borderwidth=3, command=sd)
 search_emp_work.grid(column=1,row=1)
