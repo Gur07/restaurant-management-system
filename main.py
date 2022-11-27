@@ -171,8 +171,7 @@ def t():
             l.append('18')                 # tax
 
             l.append(date.today() )        # date
-            print('l=', l)
-            print('dic=',dic)
+
             total_items=0
             for i in dic:                  # total items
                 total_items+=dic[i]
@@ -181,7 +180,7 @@ def t():
                 query = '''insert into ctd values('{}','{}','{}','{}','{}','{}','{}',{})'''.format(l[0], l[1], l[4], l[3], l[5], l[2],l[6],a+(0.18*a))
                 cur.execute(query + ';')
                 db.commit()
-                print('row inserted')
+
             except Exception as e:
                 print(e)
             try:
@@ -191,7 +190,7 @@ def t():
                                                                                     list_of_items[6],list_of_items[7])
                 cur.execute(query2+';')
                 db.commit()
-                print('order details added')
+
             except Exception as e:
                 print(e)
 
@@ -261,7 +260,7 @@ def c():
 
 
         try:
-            query='''insert into employee values({},'{}','{}','{}',{},'{}')'''.format(1,namentry.get(),desientry.get(),hirentry.get(),salentry.get(),depentry.get())
+            query='''insert into employee values('{}','{}','{}',{},'{}')'''.format(namentry.get(),desientry.get(),hirentry.get(),salentry.get(),depentry.get())
             cur.execute(query+';')
             db.commit()
         except Exception as e:
@@ -348,15 +347,15 @@ def s():
 
                     l3 = tk.Label(window_search, text='Name:', font=20)
                     l3.grid(column=1, row=1, ipadx=10, ipady=10, sticky=tk.W)
-                    namentry = tk.Label(window_search, text='{}'.format(i[1]))
+                    namentry = tk.Label(window_search, text='{}'.format(i[0]))
                     namentry.grid(column=2, row=1, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
                     l2 = tk.Label(window_search, text='Designation:', font=20)
                     l2.grid(column=1, row=2, ipadx=10, ipady=10, sticky=tk.W)
-                    desientry = tk.Label(window_search, text='{}'.format(i[2]))
+                    desientry = tk.Label(window_search, text='{}'.format(i[1]))
                     desientry.grid(column=2, row=2, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
                     hiredate = tk.Label(window_search, text='Date(YYYY-MM-DD)', font=20)
                     hiredate.grid(column=1, row=3, ipadx=10, ipady=10, sticky=tk.W)
-                    hirentry = tk.Label(window_search, text='{}'.format(i[3]))
+                    hirentry = tk.Label(window_search, text='{}'.format(i[2]))
                     hirentry.grid(column=2, row=3, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
                     salary = tk.Label(window_search, text='Salary', font=20)
@@ -364,9 +363,9 @@ def s():
                     department = tk.Label(window_search, text='Department', font=20)
                     department.grid(column=1, row=5, ipadx=10, ipady=10, sticky=tk.W)
 
-                    salentry = tk.Label(window_search, text='{}'.format(i[4]))
+                    salentry = tk.Label(window_search, text='{}'.format(i[3]))
                     salentry.grid(column=2, row=4, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
-                    depentry = tk.Label(window_search, text='{}'.format(i[5]))
+                    depentry = tk.Label(window_search, text='{}'.format(i[4]))
                     depentry.grid(column=2, row=5, ipadx=10, ipady=5, sticky=tk.W, padx=10, pady=10)
 
 
@@ -401,7 +400,7 @@ def sd():
                 print('record found', f)
                 for i in f :
 
-                    lt=[i[0],i[1],i[2],str(i[3]),i[4],i[5]]
+                    lt=[i[0],i[1],str(i[2]),i[3],i[4]]
                     label=tk.Label(window_searchdesignation,text='{}'.format(lt),font=25)
                     label.pack()
 
