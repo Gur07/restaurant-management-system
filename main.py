@@ -52,10 +52,10 @@ def conn():
             intropage.destroy()
         except:
             cur.execute('create database restaurant;')
-            cur.execute('create table ctd(name varchar(30),phno char(10),order_id varchar(15) primary key,mode_of_payment char(4),tax varchar(5),amount int,date_of_order date)')
-            cur.execute('create table employee(empno int,ename varchar(20) primary key,designation varchar(20),hiredate date,salary int,department varchar(15)')
-            cur.execute('create table order_details(order_id varchar(15) primary key,no_of_items int,item1 int,item2 int,item3 int,item4 int,item5 int,item6 int,item7 int,item8 int)')
-            cur.execute('''insert into employee(ename,designation,salary,department) values('Ratan sharma','owner',0,'office');''')
+            cur.execute('use restaurant;')
+            cur.execute('create table ctd(name varchar(30),phno char(10),order_id varchar(15) primary key,mode_of_payment char(4),tax varchar(5),amount int,date_of_order date);')
+            cur.execute('create table employee(empno int,ename varchar(20) primary key,designation varchar(20),hiredate date,salary int,department varchar(15));')
+            cur.execute('create table order_details(order_id varchar(15) primary key,no_of_items int,item1 int,item2 int,item3 int,item4 int,item5 int,item6 int,item7 int,item8 int);')
             print('database/tables created')
 
             psw1 = psw.get()
